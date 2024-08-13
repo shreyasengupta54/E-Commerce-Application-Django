@@ -3278,6 +3278,29 @@ textarea.form-control-lg {
   left: auto;
 }
 
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+    display: none;
+}
+
+/* Show the submenu on hover */
+.dropdown-submenu:hover .dropdown-menu {
+    display: block;
+    left: 100%;
+    top: 0;
+    margin-top: 0;
+}
+
+.dropdown-submenu .dropdown-item.dropdown-toggle::after {
+    display: none; /* Hide the caret icon if you don't want it */
+}
+
 @media (min-width: 576px) {
   .dropdown-menu-sm-start {
     --bs-position: start;

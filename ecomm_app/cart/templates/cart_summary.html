@@ -1,0 +1,142 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<!-- Header-->
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Cart</h1>
+        </div>
+    </div>
+</header>
+<div class="container">
+    {% if cart_products %}
+    <div class="row">
+        <!-- Products in cart -->
+        <div class="col-md-6 mt-5 mb-5">
+            {% for product in cart_products %}
+            <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0 mb-3 mt-3">
+                    <div class="col-md-4">
+                        <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            {% if product.is_sale %}
+                            <span class="text-muted text-decoration-line-through">₹{{ product.price }}</span>
+                            <p class="card-text">₹{{ product.sale_price }}</p>
+                            {% else %}
+                            <p class="card-text">₹{{ product.price }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex">
+                            <select class="form-select ms-3" id="select{{ product.id }}" style="max-width: 5rem; border-color:black">
+                                {% for key, val in quantities.items %}
+                                {% if key == product.id|slugify %}
+                                <option selected>{{ val }}</option>
+                                {% endif %}
+                                {% endfor %}
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                            <br />
+                            <button class="btn btn-outline-dark ms-3" type="button" data-index="{{ product.id }}" id="update-product">
+                                <i class="bi bi-arrow-repeat me-1"></i>
+                                Update
+                            </button>
+                            <button class="btn btn-outline-dark ms-3" type="button" data-index="{{ product.id }}" id="delete-product">
+                                <i class="bi-trash-fill me-1"></i>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- Total of cart -->
+        <div class="col-md-6 mt-5 mb-5">
+            <div class="text-left mb-2">
+                <strong>PRICE DETAILS</strong>
+            </div>
+            
+            <div class="card mb-3" style="max-width: 540px;">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <span class="me-auto">Total MRP:</span>
+                        <span style="float: right;">₹{{ totals }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="me-auto">Shipping:</span>
+                        <span style="float: right; color: green;">FREE</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>
+                            <span class="me-auto">Total Amount:</span>
+                            <span style="float: right;">₹{{ totals }}</span>
+                        </strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card text-center mt-5 mb-5">
+        <div class="card-body">
+            <p class="card-text">Your cart is empty. Keep shopping!</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<script>
+    //Update item in cart
+    $(document).on('click', '#update-product', function(e) {
+        e.preventDefault();
+        var productid = $(this).data('index')
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart_update"%}',
+            data: {
+                product_id: $(this).data('index'),
+                product_qty: $('#select' + productid + ' option:selected').text(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function(json) {
+                console.log(json)
+                location.reload();
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(errmsg)
+                console.log(err)
+            }
+        });
+    })
+
+    //Delete item from cart
+    $(document).on('click', '#delete-product', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart_delete"%}',
+            data: {
+                product_id: $(this).data('index'),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function (json) {
+                console.log(json)
+                location.reload();
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(errmsg)
+                console.log(err)
+            }
+        });
+    })
+</script>
+{% endblock %}        

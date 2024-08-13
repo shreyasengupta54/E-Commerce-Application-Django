@@ -6,30 +6,48 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>                
+                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#!">All Products</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#!">Popular Items</a></li>
-                        <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                    <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Categories
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for parent in categories %}
+                        <li class="dropdown-submenu">
+                            {% if parent.subcategories.exists %}
+                            <a class="dropdown-item" href="#" id="submenu-{{ parent.id }}">
+                                {{ parent.name }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="submenu-{{ parent.id }}">
+                                {% for subcategory in parent.subcategories.all %}
+                                <li><a class="dropdown-item" href="{% url 'category' subcategory.name|slugify %}">{{ subcategory.name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <a class="dropdown-item" href="{% url 'category' parent.name|slugify %}">{{ parent.name }}</a>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
                     </ul>
                 </li>
             </ul>
-            <div class="d-flex ms-auto">
-                <form class="d-flex align-items-center">
-                    <button class="btn btn-outline-dark me-2" type="submit">
-                        <i class="bi bi-cart-fill me-1"></i>
-                        Cart
-                        <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                    </button>
-                </form>
-                <ul class="navbar-nav">
+            <div class="d-flex flex-column flex-lg-row ms-auto align-items-lg-center">
+                <div class="d-flex align-items-center mb-2 mb-lg-0">
+                    <form class="d-flex align-items-center">
+                        <a href="{% url 'cart_summary' %}" class="btn btn-outline-dark me-2" type="submit">
+                            <i class="bi bi-cart-fill me-1"></i>
+                            Cart
+                            <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart_quantity">{{ cart|length }}</span>
+                        </a>
+                    </form>
+                </div>
+                <ul class="navbar-nav d-flex flex-column flex-lg-row align-items-lg-center">
                     {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'update_user' %}">Profile</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
                     {% else %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
             </div>
