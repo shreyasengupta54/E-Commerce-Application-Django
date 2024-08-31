@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Header-->
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Address</h1>            
+        </div>
+    </div>
+</header>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <strong class="row justify-content-center">Billing Address</strong>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'update_info' %}">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-secondary w-100" name="submit_action" value="billing">Save Billing Address</button>
+                    </form>
+                </div>                  
+            </div>
+            <br />
+            <br />
+            <div class="card">
+                <div class="card-header">
+                    <strong class="row justify-content-center">Shipping Address</strong>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'update_info' %}">
+                        {% csrf_token %}
+                        {{ shipping_form.as_p }}                        
+                        <button type="submit" class="btn btn-secondary w-100" name="submit_action" value="shipping">Save Shipping Address</button>
+                    </form>
+                </div>                  
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+{% endblock %}

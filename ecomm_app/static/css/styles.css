@@ -486,6 +486,35 @@ progress {
   display: none !important;
 }
 
+.search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.search-button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.search-button i {
+    font-size: 18px;
+    color: #999;
+}
+
 .lead {
   font-size: 1.25rem;
   font-weight: 300;

@@ -1,8 +1,9 @@
-from store.models import Product
+from store.models import Product, Profile
+
 class Cart():
     def __init__(self, request):
         self.session = request.session
-        
+        self.request = request
         cart = self.session.get('session_key')
         
         if 'session_key' not in request.session:
@@ -12,7 +13,20 @@ class Cart():
     
     def __len__(self):
         return len(self.cart)
-        
+    
+    def persist_add(self, product, quantity):
+        product_id = str(product)
+        quantity = int(quantity)
+        if product_id in self.cart:
+            self.cart = self.update(product_id, quantity)
+        else:
+            self.cart[product_id] = int(quantity)
+        self.session.modified = True
+        if self.request.user.is_authenticated:
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            cart_format = str(self.cart).replace("'",'"')
+            current_user.update(old_cart=str(cart_format))
+    
     def add(self, product, quantity):
         product_id = str(product.id)
         quantity = int(quantity)
@@ -21,6 +35,11 @@ class Cart():
         else:
             self.cart[product_id] = int(quantity)
         self.session.modified = True
+        if self.request.user.is_authenticated:
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            cart_format = str(self.cart).replace("'",'"')
+            current_user.update(old_cart=str(cart_format))
+            
         
     def update(self, product, quantity):
         product_id = str(product)
@@ -28,6 +47,10 @@ class Cart():
         current_cart = self.cart
         current_cart[product_id] = product_qty
         self.session.modified = True
+        if self.request.user.is_authenticated:
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            cart_format = str(self.cart).replace("'",'"')
+            current_user.update(old_cart=str(cart_format))
         return self.cart
     
     def delete(self, product):
@@ -35,6 +58,10 @@ class Cart():
         if product_id in self.cart:
             del self.cart[product_id]
         self.session.modified = True
+        if self.request.user.is_authenticated:
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            cart_format = str(self.cart).replace("'",'"')
+            current_user.update(old_cart=str(cart_format))
         return self.cart
     
     def get_cart_total(self):

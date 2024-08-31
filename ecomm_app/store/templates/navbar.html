@@ -30,6 +30,17 @@
                         {% endfor %}
                     </ul>
                 </li>
+                <li class="nav-item">
+                    <form method="POST" action="{% url 'search' %}" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-1 my-md-0 mw-100 navbar-search">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-dark border-end-0 small" placeholder="Search Products" name="search" value="" aria-label="Search" aria-describedby="basic-addon2">
+                            <button class="btn btn-secondary ml+1" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </li>
             </ul>
             <div class="d-flex flex-column flex-lg-row ms-auto align-items-lg-center">
                 <div class="d-flex align-items-center mb-2 mb-lg-0">
@@ -43,7 +54,15 @@
                 </div>
                 <ul class="navbar-nav d-flex flex-column flex-lg-row align-items-lg-center">
                     {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'update_user' %}">Profile</a></li>
+                    <!--<li class="nav-item"><a class="nav-link" href="{% url 'update_user' %}">Profile</a></li>-->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Profile</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'update_user' %}">Profile Details</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item" href="{% url 'update_info' %}">Address</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
                     {% else %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>

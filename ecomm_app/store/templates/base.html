@@ -20,8 +20,8 @@
     {% include 'navbar.html' %}
     {% if messages %}
     {% for message in messages %}
-    <div class="position-absolute top-0 start-50 translate-middle-x">
-        <div class="alert alert-warning alert-dismissible fade show d-inline-block opacity-75 shadow bg-body-tertiary rounded" role="alert">
+    <div class="position-absolute top-20 start-50 translate-middle-x">
+        <div class="alert alert-warning alert-dismissible fade show d-inline-block opacity-75 shadow bg-body-tertiary rounded" role="alert" style="position: relative; z-index: 1000000;">
             <div class="text-center">
                 {{ message }}
             </div>

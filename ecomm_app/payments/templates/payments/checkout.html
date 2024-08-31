@@ -1,0 +1,75 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<!-- Header-->
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Checkout</h1>
+        </div>
+    </div>
+</header>
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <strong>Order Summary</strong>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for product in cart_products %}
+                        <li class="list-group-item">
+                            <span>
+                                <strong>{{ product.name }}</strong>
+                            </span>
+                            <span style="float: right;">
+                                {% if product.is_sale %}
+                                ₹{{ product.sale_price }}
+                                {% else %}
+                                ₹{{ product.price }}
+                            </span>
+                            <br />
+                            {% for key, val in quantities.items %}
+                            {% if key == product.id|slugify %}
+                            <span style="float: right;">
+                                <small>Qty: {{ val }}</small>
+                            </span>
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                        <li class="list-group-item">
+                            <span class="me-auto">
+                                <strong>Total: </strong>
+                            </span>
+                            <span style="float: right;">
+                                <strong>₹{{ totals }}</strong>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'cart_summary' %}">Want to modify items? Go back to cart!</a>
+                </div>
+            </div>
+            <form method="POST" action="{% url 'billing_info' %}">
+                <div class="card mt-4">
+                    <div class="card-header text-center">
+                        <strong>Shipping Address</strong>
+                    </div>
+                    <div class="card-body">
+                        {% csrf_token %}
+                        {{ shipping_form.as_p }}
+                    </div>
+                </div>
+                <div class="button mt-4 ">
+                    <button type="submit" class="btn btn-secondary float-end">Proceed to Billing</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}        
