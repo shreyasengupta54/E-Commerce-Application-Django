@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
+import datetime
 from cart.cart import Cart
 from payments.forms import ShippingForm, PaymentForm
 from payments.models import ShippingAddress, Order, OrderItems
-from store.models import Product
+from store.models import Product, Profile
 
 def payment_success(request):
     return render(request, 'payments/payment_success.html', {})
@@ -68,7 +69,9 @@ def process_order(request):
                         create_order_item.save()                        
             for key in list(request.session.keys()):
                 if key == "session_key":
-                    del request.session[key]
+                    del request.session[key]                    
+            current_user = Profile.objects.filter(user__id=request.user.id)
+            current_user.update(old_cart="")
             messages.success(request, "Order Placed Successfully.")
             return redirect('home')
         else:
@@ -93,3 +96,51 @@ def process_order(request):
     else:
         messages.success(request, "Access Denied.")
         return redirect('home')
+    
+def shipped_dash(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        orders = Order.objects.filter(shipped=True)
+        if request.POST:
+            orders.update(shipped=False, date_shipped = None)            
+            messages.success(request, "Shipping Status Updated")           
+        return render(request, 'payments/shipped_dash.html', {'orders': orders})
+    else:
+        messages.success(request, "Access Denied.")
+        return redirect('home')
+
+def shipped_pending_dash(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        orders = Order.objects.filter(shipped=False)
+        if request.POST:
+            now = datetime.datetime.now()
+            orders.update(shipped=True, date_shipped = now)            
+            messages.success(request, "Shipping Status Updated")           
+        return render(request, 'payments/shipped_pending_dash.html', {'orders': orders})
+    else:
+        messages.success(request, "Access Denied.")
+        return redirect('home')
+    
+def orders(request, pk):
+    source = request.GET.get('source')
+    if request.user.is_authenticated and request.user.is_superuser:
+        order = Order.objects.get(id=pk)
+        items = OrderItems.objects.filter(order=pk)
+        if request.POST:
+            status = request.POST['shipping_status']
+            if status == 'true':
+                now = datetime.datetime.now()
+                order = Order.objects.filter(id=pk)
+                order.update(shipped=True, date_shipped = now)
+            else:
+                order = Order.objects.filter(id=pk)
+                order.update(shipped=False, date_shipped = None)
+            messages.success(request, "Shipping Status Updated")
+            if source == 'shipped':
+                return redirect('shipped_dash')
+            else:
+                return redirect('shipped_pending_dash')
+        return render(request, 'payments/orders.html', {'order': order, 'items': items})
+    else:
+        messages.success(request, "Access Denied.")
+        return redirect('home')
+    
