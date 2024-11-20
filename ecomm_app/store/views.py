@@ -81,10 +81,10 @@ def category(request, name):
     words = name.split()
     capitalized_words = [word.capitalize() if word != 'and' else word for word in words]
     name = ' '.join(capitalized_words)
-    if 'Mens' in name:
-        name = name.replace('Mens', "Men's")
-    if 'Womens' in name:
-        name = name.replace('Womens', "Women's")
+    # if 'Mens' in name:
+    #     name = name.replace('Mens', "Men's")
+    # if 'Womens' in name:
+    #     name = name.replace('Womens', "Women's")
     print(name)
     try:
         category = Category.objects.get(name=name)
